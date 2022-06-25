@@ -22,10 +22,10 @@ if [ -n "$1" ]; then
     device=$1
 fi
 
-# the width is default and i wont use it. It's in mm and equal to 8.5in
-width=215.88
-# the height has to be set. its now 11in = 279.4 and 11.4in = 290. Setting the height higher does not work on the ADF, but does work on the flatbet
-height=279.4
+# the width is changed to A4
+width=210
+# the height has to be set. its now in A4 size. Setting the height higher does not work on the ADF, but does work on the flatbet
+height=297
 mode="Black & White"
 
 epochnow=$(date '+%s')
