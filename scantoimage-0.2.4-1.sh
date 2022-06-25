@@ -38,7 +38,45 @@ done
 mode='"24Bit Color"'
 #mode='"Black & White"'
 
-logfile="/home/arjun/brscan/brscan-skey.log"
+# LOGFILE
+scriptname=$(basename "$0")
+# $0 refers to the script name
+basedir=$(readlink -f "$0" | xargs dirname)
+
+# change to directory of script
+cd ${basedir}
+echo "basedir = $basedir" 
+
+# ugly hack that makes environment variables set available
+cfgfile=$(ls ../brscan-skey-*.cfg)
+echo "cfgfile = $cfgfile"
+if [[ -r "$cfgfile" ]]; then
+    echo "Found cfgfile"
+    source "$cfgfile"
+    echo "environment after processing cfgfile"
+    env
+fi
+
+
+# SAVETO DIRECTORY
+if [[ -z "$SAVETO" ]];  then
+    SAVETO=${HOME}'/brscan/photos'
+else
+    SAVETO=${SAVETO}'/photos/'
+fi
+
+mkdir -p $SAVETO
+
+if [[ -z $LOGDIR ]]; then
+    # if LOGDIR is not set, choose a default
+    mkdir -p ${HOME}/brscan
+    logfile=${HOME}"/brscan/$scriptname.log"
+else
+    mkdir -p $LOGDIR
+    logfile=${LOGDIR}"/$scriptname.log"
+fi
+touch ${logfile}
+
 if [ -z "$1" ]; then
     device='brother4:net1;dev0'
 else
@@ -47,13 +85,12 @@ fi
 
 # in scantofile the widht and height are automatically set. Here, they're not.
 
-mkdir -p ~/brscan/photos
 if [ "`which usleep  2>/dev/null `" != '' ];then
     usleep 100000
 else
     sleep  0.1
 fi
-output_file=/home/arjun/brscan/photos/brscan_photo_"`date +%Y-%m-%d-%H-%M-%S`".pnm
+output_file=${SAVETO}"/brscan_photo_`date +%Y-%m-%d-%H-%M-%S`.pnm"
 
 #echo "scan from $2($device) to $output_file"
 
@@ -86,13 +123,10 @@ fi
 
 if [ -s $output_file ]; then
     echo  $output_file is created.
-    # change ownership so arjun and szhao have access
-    chown arjun:szhao $output_file
 
     # Should convert to jpg and delete duplicates
     output_file_compressed=$(dirname $output_file)"/"$(basename $output_file .pnm)".$compress_format"
     echo convert -trim -bordercolor White -border 20x10 +repage -quality 95 -density "$resolution" $output_file "$output_file_compressed" 
     echo convert -trim -quality 95 -density "$resolution" $output_file "$output_file_compressed" >> $logfile
     echo convert -trim -quality 95 -density "$resolution" "$output_file" "$output_file_compressed" | bash
-    chown arjun:szhao $output_file_compressed
 fi
