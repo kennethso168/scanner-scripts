@@ -86,6 +86,8 @@ echo "$*" >> ${logfile}
 set >> ${logfile}
 echo $LOGDIR >> ${logfile}
 
+umask 000
+
 fileprefix='scantoocr'
 echo "${basedir}/batchscan.py \
     --outputdir ${SAVETO} \

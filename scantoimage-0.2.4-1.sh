@@ -106,6 +106,8 @@ echo "scanimage $SCANOPTIONS > $output_file"
 echo "scanimage $SCANOPTIONS > $output_file" >> $logfile 
 echo "scanimage $SCANOPTIONS > $output_file" 2>> $logfile | bash
 
+umask 000
+
 #scanimage --verbose $SCANOPTIONS > $output_file 2>/dev/null
 
 # if the file is zero size, run again.
