@@ -186,7 +186,10 @@ def run_scancommand(device_name,outputfile,width=None,height=None,mode=None,reso
 
     # add outputfile option
     scancommand = scancommand + ['--batch='+outputfile]
-    for op in ['device_name','batch_start','batch_increment','resolution','mode','source']:
+    # A hack that removes the --device-name option. Don't know why it works (maybe problem in parsing device_name). Don't have time to further test
+    # Currently this is ok as I only have one Brother scanner now. Need to properly fix this when there are multiple devices
+    #for op in ['device_name','batch_start','batch_increment','resolution','mode','source']:
+    for op in ['batch_start','batch_increment','resolution','mode','source']:
         # if option is not False or None
         if eval(op):
             # this relies on the option variable name matching the scancommand option name
