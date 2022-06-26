@@ -282,6 +282,23 @@ def convert_to_pdf(
                         # rename the pnm file as the jpg file for pdf conversion
                         f = jpgf
                         run.wait()
+                    
+                    # Crop the image from bottom to make it in A4 ratio
+                    # As img2pdf does not support assymetric cropping
+                    cropf = re.sub(r'\....$',r'_crop.png',f)
+                    cmd = ['convert', f, '-gravity', 'South', '-chop', '0x668', cropf]
+                    if debug:
+                        print(cmd)
+
+                    try:
+                        run = subprocess.Popen(cmd,stdout=logfile,stderr=logfile)
+                    except:
+                        err = True
+                        logprint('Error cropping image using convert')
+                        if debug:
+                            traceback.print_exc(file=sys.stdout)
+                    f = cropf
+                    run.wait()
 
                     pdff = re.sub(r'\....$',r'.pdf',f)
                     cmd = ['img2pdf'] + img2pdfopts + ['-o',pdff,f]
